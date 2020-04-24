@@ -20,7 +20,7 @@ Mongoose.connection.on("diconnected", () => {
     console.log("MOngoose disconnected");
 });
 
-const shutdowm = (msg, callback) => {
+const shutdown = (msg, callback) => {
     Mongoose.connection.close(() => {
         console.log(`mongoose disconnected through ${msg}`);
         callback();
@@ -34,13 +34,15 @@ process.once("SIGUSR2", () => {
 });
 
 process.on("SIGINT", () => {
-    shutdowm("app termination", () => {
+    shutdown("app termination", () => {
         process.exit(0);
     });
 });
 
 process.on("SIGTERM", () => {
-    shutdowm("Hereko app shutdown", () => {
+    shutdown("Hereko app shutdown", () => {
         process.exit(0);
     });
 });
+
+require("./heros");
