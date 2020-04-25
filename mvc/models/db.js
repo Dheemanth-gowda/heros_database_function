@@ -1,48 +1,65 @@
-const Mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
-let uri = "mongodb://localhost/the_supers_prod";
+let uri = 'mongodb://localhost/the_supers';
 
-Mongoose.connect(uri, { useNewUrlParser: true });
+if (process.env.NODE_ENV === 'production') {
+    uri = process.env.MONGODB_URI;
+}
 
-Mongoose.connection.on("connected", () => {
-    console.log("============================");
-    console.log("============================");
-    console.log(`Connected to the uri ${uri}`);
-    console.log("============================");
-    console.log("============================");
+
+mongoose.connect(uri, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
 });
 
-Mongoose.connection.on("error", (err) => {
-    console.log(`mongoose connection has some error ${err}`);
+
+mongoose.connection.on('connected', () => {
+    console.log("======================");
+    console.log("======================");
+    console.log(`Mongoose connected to ${uri}`);
+    console.log("======================");
+    console.log("======================");
 });
 
-Mongoose.connection.on("diconnected", () => {
-    console.log("MOngoose disconnected");
+mongoose.connection.on('error', err => {
+    console.log(`Mongoose connection error: ${err}`);
 });
+
+mongoose.connection.on('disconnected', () => {
+    console.log('Mongoose disconnected');
+});
+
 
 const shutdown = (msg, callback) => {
-    Mongoose.connection.close(() => {
-        console.log(`mongoose disconnected through ${msg}`);
+    mongoose.connection.close( () => {
+        console.log(`Mongoose disconnected through ${msg}`);
         callback();
     });
 };
 
-process.once("SIGUSR2", () => {
-    shutdown("nodemon restart", () => {
-        process.kill(process.pid, "SIGUSR2");
+
+
+process.once('SIGUSR2', () => {
+    shutdown('nodemon restart', () => {
+        process.kill(process.pid, 'SIGUSR2');
     });
 });
 
-process.on("SIGINT", () => {
-    shutdown("app termination", () => {
+
+process.on('SIGINT', () => {
+    shutdown('app termination', () => {
         process.exit(0);
     });
 });
 
-process.on("SIGTERM", () => {
-    shutdown("Hereko app shutdown", () => {
+
+process.on('SIGTERM', () => {
+    shutdown('Heroku app shutdown', () => {
         process.exit(0);
     });
 });
 
-require("./heros");
+
+
+
+require('./heroes');
