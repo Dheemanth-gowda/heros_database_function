@@ -52,10 +52,20 @@ deleteHero = function({ params }, res) {
     });
 };
 
+getUpdatedForm = function({ params }, res) {
+    Hero.findById(params.heroid, (err, hero) => {
+        if (err) {
+            res.send({ error: err });
+        }
+        res.render("update-hero", { title: "Upadte hero", hero: hero });
+    });
+};
+
 module.exports = {
     getIndex,
     getHeroesIndex,
     getHeroesForm,
     createNewHero,
     deleteHero,
+    getUpdatedForm,
 };
